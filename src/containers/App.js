@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import "./App.css";
+// import "./App.css";
 import Navigation from "../components/Navigation/Navigation";
 import SignIn from "../components/SignIn/SignIn";
 import Register from "../components/Register/Register";
@@ -48,14 +48,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Particles className="particles" params={ParticlesOptions} />
-        <Navigation
-          isSignedIn={this.state.isSignedIn}
-          onRouteChange={this.onRouteChange}
-        />
+        {/* <Particles className="particles" params={ParticlesOptions} /> */}
+        {/* <Navigation isSignedIn={this.state.isSignedIn} onRouteChange={this.onRouteChange} /> */}
         {this.state.route === "home" ? (
           <div>
-            <Logo />
+            {/* <Logo /> */}
             {/* <Rank /> */}
             {/* <DisplayState state={this.state}/> */}
             <Main />

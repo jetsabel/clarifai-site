@@ -1,5 +1,5 @@
 import React from 'react';
-import './Navigation.css';
+// import './Navigation.css';
 
 const Navigation = ({isSignedIn,onRouteChange}) => {
   if(isSignedIn) {
@@ -14,6 +14,7 @@ const Navigation = ({isSignedIn,onRouteChange}) => {
         <p onClick ={()=>onRouteChange('register')} className="f3 tr link dim black underline pa3 pointer">Register</p>
         <p onClick ={()=>onRouteChange('signin')} className="f3 tr link dim black underline pa3 pointer">Sign In</p>
       </nav>
+      
     )
   }
 }

@@ -1,6 +1,6 @@
 import React from "react";
-import LogoImage from "../Logo/Logo.png";
-import "./DisplayImage.css";
+// import LogoImage from "../Logo/Logo.png";
+// import "./DisplayImage.css";
 
 const LoadImage = ({ imageURL }) => {
   //   if (imageURL) {
@@ -22,17 +22,9 @@ const LoadImage = ({ imageURL }) => {
   if (imageURL) {
     return (
       <React.Fragment>
-        <div className="ma4 mt0 center">
-            <div className="Tilt-inner pa4">
-              {" "}
-              <img
-                src={imageURL}
-                alt="logo"
-                height="auto"
-                width="500px"
-              />{" "}
-            </div>
-        </div>
+
+              <img src={imageURL} alt="logo" height="auto" width="500px" /> 
+   
       </React.Fragment>
     );
   } else return null;

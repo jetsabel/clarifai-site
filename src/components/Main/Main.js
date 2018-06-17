@@ -1,14 +1,11 @@
 import React from "react";
-import "./Main.css";
-import FaceButton from "./FaceButton";
-import NSFWButton from "./NSFWButton";
+import "../../index.css";
 import URLBar from "./URLBar";
 // import Rank from "./Rank";
 import DisplayImage from "./DisplayImage";
 // import FaceRecognition from "./FaceRecognition";
 import Clarifai from "clarifai";
-import DomColButton from "./DomColButton";
-
+import DefaultImage from '../Logo/Logo'
 const app = new Clarifai.App({
   apiKey: "f43a1b9e565d4b5abec85b8a823bf2b5"
 });
@@ -120,24 +117,14 @@ class Main extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <p className="f3">
-          <FaceButton
-            calcFaceNumber={this.calcFaceNumber}
-            answerFaceNumber={this.state.answerFaceNumber}
-          />
-          <NSFWButton
-            calcNSFW={this.calcNSFW}
-            answerNSFW={this.state.answerNSFW}
-          />
-          <DomColButton
-            calcDomCol={this.calcDomCol}
-            answerDomCol={this.state.answerDomCol}
-          />
-        </p>
-        <div className="form center pa4 br3 shadow-5">
+        {/* <div className="form center pa4 br3 shadow-5 bg-stripeypattern w-50"> */}
+        <div className="center pa4 br3 shadow-5 bg-stripeypattern w-50">
           <URLBar onInputChange={this.onInputChange} imageURL={this.state.imageURL} onLoadImage={this.onLoadImage} />
         </div>
-          <DisplayImage imageURL={this.state.imageURL} />
+        {/* <div className="center pa4 br3 shadow-5 bg-stripeypattern w-50"> */}
+          {/* <DisplayImage imageURL={this.props.imageURL} /> */}
+              {/* <img src={this.state.imageURL||DefaultImage} alt="logo" height="auto" width="500px" />  */}
+        {/* </div> */}
       </React.Fragment>
     );
   }
