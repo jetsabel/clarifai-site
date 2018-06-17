@@ -1,5 +1,6 @@
 import React from "react";
 import "../../index.css";
+import Helpers from './Helpers'
 import URLBar from "./URLBar";
 // import Rank from "./Rank";
 import DisplayImage from "./DisplayImage";
@@ -14,116 +15,147 @@ class Main extends React.Component {
   constructor() {
     super();
     this.state = {
-      input: "",
-      imageURL: "",
-      // input: 'https://i.ebayimg.com/images/g/3y8AAOSwuMZZAqcE/s-l300.jpg',
-      answerFace: undefined,
-      answerFaceNumber: undefined,
-      answerDomCol: undefined,
-      answerNSFW: undefined,
-      onLoadImage: undefined,
-      onInputChange: undefined
+      // input: "",
+      // // imageURL: 'https://i.ebayimg.com/images/g/3y8AAOSwuMZZAqcE/s-l300.jpg',
+      // // input: 'https://i.ebayimg.com/images/g/3y8AAOSwuMZZAqcE/s-l300.jpg',
+      // // answerFace: undefined,
+      // answerFaceNumber: undefined,
+      // answerDomCol: undefined,
+      // answerNSFW: undefined,
+      // onLoadImage: undefined,
+      // onInputChange: undefined
     };
   }
 
-  onLoadImage = event => {
-    console.log("onLoadImage()", event.target.value);
+  setInitialState = () => {
     this.setState({ answerFace: undefined });
     this.setState({ answerFaceNumber: undefined });
     this.setState({ answerNSFW: undefined });
-    this.setState({ imageURL: this.state.input });
   };
 
-  calcNSFW = () => {
-    let nsfw = undefined;
-    app.models.predict(Clarifai.NSFW_MODEL, this.state.input).then(
-      function(response) {
-        nsfw = response.outputs[0].data.concepts[1].value * 100;
-      },
-      function(err) {
-        alert("error - valid image URL and web connection?");
-      }
-    );
-    //TODO dirty hack with timeout until i can understand promises async etc
-    setTimeout(() => {
-      this.setState({ answerNSFW: nsfw });
-    }, 3000);
+  onLoadImage = event => {
+    // console.log('onLoadImage()',event)
+    this.setInitialState();
+    this.setState({ imageURL: this.state.input });
+    console.log("onLoadImage()");
+    this.getRawData();
   };
+
+  getRawData = () => {
+    // console.log("getRawData()",this.state.input);
+    let temp_answerGeneral, temp_answerNSFW, temp_answerFood, temp_answerDomCol, temp_answerFaces, temp_answerModeration
+    app.models
+      .predict(
+        Clarifai.NSFW_MODEL,
+        this.state.input
+      )
+      .then(
+        function(response) {
+          temp_answerNSFW = response.outputs[0].data.concepts[1].value * 100;
+        },
+        function(err) { alert("error - valid image URL and web connection?"); }
+      );
+    app.models
+      .predict(
+        Clarifai.FOOD_MODEL,
+        this.state.input
+      )
+      .then(
+        function(response) {
+          temp_answerFood = response.outputs[0].data.concepts
+        },
+        function(err) { alert("error - valid image URL and web connection?"); }
+      );
+    app.models
+      .predict(
+        Clarifai.FACE_DETECT_MODEL,
+        this.state.input
+      )
+      .then(
+        function(response) {
+          temp_answerFaces = response.outputs[0].data.regions.length;
+        },
+        function(err) { alert("error - valid image URL and web connection?"); }
+      );
+    app.models
+      .predict(
+        Clarifai.COLOR_MODEL,
+        this.state.input
+      )
+      .then(
+        function(response) {
+          console.log(response)
+          temp_answerDomCol = response.outputs[0].data.colors;
+        },
+        function(err) { alert("error - valid image URL and web connection?"); }
+      );
+    app.models
+      .predict(
+        Clarifai.GENERAL_MODEL,
+        this.state.input
+      )
+      .then(
+        function(response) {
+          console.log(response)
+          temp_answerGeneral = response.outputs[0].data.concepts
+        },
+        function(err) { alert("error - valid image URL and web connection?"); }
+      );
+    app.models
+      .predict(
+        Clarifai.MODERATION_MODEL,
+        this.state.input
+      )
+      .then(
+        function(response) {
+          console.log(response)
+          temp_answerModeration = response.outputs[0].data.concepts
+        },
+        function(err) { alert("error - valid image URL and web connection?"); }
+      );
+          setTimeout(() => {
+        this.setState({ answerNSFW: temp_answerNSFW });
+        this.setState({ answerGeneral: temp_answerGeneral });
+        this.setState({ answerModeration: temp_answerModeration });
+        this.setState({ answerDomCol: temp_answerDomCol });
+        this.setState({ answerFaces: temp_answerFaces });
+        this.setState({ answerFood: temp_answerFood });
+      }, 3000);
+  };
+
+  //   calcNSFW = () => {
+  //     let nsfw = undefined;
+  //     app.models.predict(Clarifai.NSFW_MODEL, this.state.input).then(
+  //       function(response) {
+  //         nsfw = response.outputs[0].data.concepts[1].value * 100;
+  //       },
+  //       function(err) {
+  //         alert("error - valid image URL and web connection?");
+  //       }
+  //     );
+  //     //TODO dirty hack with timeout until i can understand promises async etc
+  //     setTimeout(() => {
+  //       this.setState({ answerNSFW: nsfw });
+  //     }, 3000);
+  //   };
 
   onInputChange = event => {
     this.setState({ input: event.target.value });
   };
-
-  calculateFaceLocation = data => {
-    const clarifaiFace = data;
-    console.log(clarifaiFace);
-    const image = document.getElementById("inputImage");
-    const width = Number(image.width);
-    const height = Number(image.height);
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - clarifaiFace.right_col * width,
-      bottomRow: height - clarifaiFace.bottom_row * height
-    };
-  };
-
-  calcDomCol = () => {
-    // console.log("CalcDomCol()");
-    let domCol = undefined;
-    app.models.predict(Clarifai.COLOR_MODEL, this.state.input).then(
-      function(response) {
-        // console.log(response);
-        domCol = response.outputs[0].data.colors;
-      },
-      function(err) {
-        alert("error - valid image URL and web connection?");
-      }
-    );
-    //TODO dirty hack with timeout until i can understand promises async etc
-    setTimeout(() => {
-      //NOTE below is realated to face bounding box drawing
-      // if(faces>0)box = this.calculateFaceLocation(data)
-      // this.setState({answerFace: box})
-      this.setState({ answerDomCol: domCol });
-      // console.log(this.state.answerDomCol);
-    }, 3000);
-  };
-
-  calcFaceNumber = () => {
-    let faces = undefined;
-    // let box = undefined;
-    // let data = undefined;
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input).then(
-      function(response) {
-        faces = 0;
-        if (response.outputs[0].data.regions.length > 0) {
-          faces = response.outputs[0].data.regions.length;
-        }
-      },
-      function(err) {
-        alert("error - valid image URL and web connection?");
-      }
-    );
-    //TODO dirty hack with timeout until i can understand promises async etc
-    setTimeout(() => {
-      //NOTE below is realated to face bounding box drawing
-      // if(faces>0)box = this.calculateFaceLocation(data)
-      // this.setState({answerFace: box})
-      this.setState({ answerFaceNumber: faces });
-    }, 3000);
-  };
-
   render() {
     return (
       <React.Fragment>
         {/* <div className="form center pa4 br3 shadow-5 bg-stripeypattern w-50"> */}
         <div className="center pa4 br3 shadow-5 bg-stripeypattern w-50">
-          <URLBar onInputChange={this.onInputChange} imageURL={this.state.imageURL} onLoadImage={this.onLoadImage} />
+          <URLBar
+            onInputChange={this.onInputChange}
+            imageURL={this.state.imageURL}
+            onLoadImage={this.onLoadImage}
+          />
         </div>
         {/* <div className="center pa4 br3 shadow-5 bg-stripeypattern w-50"> */}
-          {/* <DisplayImage imageURL={this.props.imageURL} /> */}
-              {/* <img src={this.state.imageURL||DefaultImage} alt="logo" height="auto" width="500px" />  */}
+        {/* <DisplayImage imageURL={this.props.imageURL} /> */}
+        {/* <img src={this.state.imageURL||DefaultImage} alt="logo" height="auto" width="500px" />  */}
         {/* </div> */}
       </React.Fragment>
     );

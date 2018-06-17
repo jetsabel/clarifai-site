@@ -7,7 +7,7 @@ import Register from "../components/Register/Register";
 import Main from "../components/Main/Main";
 import Particles from "react-particles-js";
 import Logo from "../components/Logo/Logo";
-import DisplayState from "../components/DisplayState/DisplayState";
+// import DisplayState from "../components/Main/DisplayState";
 
 const ParticlesOptions = {
   particles: {
