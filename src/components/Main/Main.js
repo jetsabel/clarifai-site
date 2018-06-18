@@ -8,6 +8,8 @@ import DisplayImage from "./DisplayImage";
 import Clarifai from "clarifai";
 import Dropzone from 'react-dropzone'
 import DefaultImage from '../Logo/Logo'
+import ConditionGame from './ConditionGame'
+
 const app = new Clarifai.App({
   apiKey: "f43a1b9e565d4b5abec85b8a823bf2b5"
 });
@@ -110,12 +112,14 @@ class Main extends React.Component {
       }
     );
     setTimeout(() => {
-      this.setState({ rawNSFW: temp_answerNSFW });
-      this.setState({ rawGeneral: temp_answerGeneral });
-      this.setState({ rawModeration: temp_answerModeration });
-      this.setState({ rawDomCol: temp_answerDomCol });
-      this.setState({ rawFaces: temp_answerFaces });
-      this.setState({ rawFood: temp_answerFood });
+      let raw = {}
+      raw.nSFW= temp_answerNSFW 
+      raw.general= temp_answerGeneral 
+      raw.moderation= temp_answerModeration 
+      raw.colors= temp_answerDomCol 
+      raw.faces= temp_answerFaces 
+      raw.food= temp_answerFood 
+      this.setState({ raw: raw });
       this.processData();
     }, 3000);
   };
@@ -123,27 +127,15 @@ class Main extends React.Component {
   processData = () => {
 let thresholdGeneral = 0.95
 let thresholdModeration = 0.95
-let thresholdFood = 0.95
-let thresholdDomCol = 0.75
-      this.setState({ anwerNSFW: 
-      this.state.rawNSFW
-      });
-      this.setState({ anwerGeneral: 
-        this.state.rawGeneral.filter(element => element.value>thresholdGeneral)
-      });
-      this.setState({ anwerModeration: 
-        this.state.rawModeration.filter(element => element.value>thresholdModeration)
-      });
-      this.setState({ anwerDomCol: 
-        this.state.rawDomCol.filter(element => element.value>thresholdDomCol)
-      });
-      this.setState({ anwerFaces: 
-        this.state.rawFaces
-      });
-      this.setState({ anwerFood: 
-        this.state.rawFood.filter(element => element.value>thresholdFood)
-      });
-
+let thresholdFood = 0.90
+let thresholdDomCol = 0.33
+let answers = {}
+        if(this.state.raw.general) answers.general = this.state.raw.general.filter(element => element.value>thresholdGeneral)
+        if(this.state.raw.moderation) answers.moderation = this.state.raw.moderation.filter(element => element.value>thresholdModeration)
+        if(this.state.raw.colors) answers.colors = this.state.raw.colors.filter(element => element.value>thresholdDomCol)
+        if(this.state.raw.faces) answers.faces = this.state.raw.faces
+        if(this.state.raw.food) answers.food = this.state.raw.food.filter(element => element.value>thresholdFood)
+      this.setState({ answers: answers });
   }
 
 
@@ -176,6 +168,9 @@ let thresholdDomCol = 0.75
             <p>Try dropping some files here, or click to select files to upload.</p>
           </Dropzone> */}
         </div>
+        <div className="center pa4 br3 shadow-5 w-50">
+          <ConditionGame state={this.state}/>
+      </div>
         {/* <div className="center pa4 br3 shadow-5 bg-stripeypattern w-50"> */}
         {/* <DisplayImage imageURL={this.props.imageURL} /> */}
         {/* <img src={this.state.imageURL||DefaultImage} alt="logo" height="auto" width="500px" />  */}
