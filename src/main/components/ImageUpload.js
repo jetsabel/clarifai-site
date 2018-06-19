@@ -65,6 +65,7 @@ class ImageUploader extends React.Component {
     }
   }
 
+  
   render() {
     const overlayStyle = {
       position: 'absolute',
@@ -88,15 +89,7 @@ class ImageUploader extends React.Component {
         >
           {this.state.dropzoneActive && <div style={overlayStyle} />}
           <div className='tc' >
-
-
-            <ul>
-              {
-                // files.map(f => <li>{f.name} - {f.size} bytes</li>)
-          <img alt='displayed pic' src={this.state.uploadedFileCloudinaryUrl || DefaultImage} />
-              }
-            </ul>
-
+            <img alt='displayed picture' src={this.state.uploadedFileCloudinaryUrl || DefaultImage} />
           </div>
         </Dropzone>
       </React.Fragment>

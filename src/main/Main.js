@@ -33,46 +33,51 @@ class Main extends React.Component {
   };
 
   getRawData = () => {
+    console.log('getRawData()')
     let temp_answerGeneral,
       temp_answerNSFW,
       temp_answerFood,
       temp_answerDomCol,
       temp_answerFaces,
       temp_answerModeration;
-    app.models.predict(Clarifai.NSFW_MODEL, this.state.input).then(
+    app.models.predict(Clarifai.NSFW_MODEL, this.state.imageURL).then(
       function(response) {
         temp_answerNSFW = response.outputs[0].data.concepts[1].value * 100;
+        console.log('response NSFW',response)
+        console.log(temp_answerNSFW)
       },
       function(err) {
         // alert("error - valid image URL and web connection?");
       }
     );
-    app.models.predict(Clarifai.FOOD_MODEL, this.state.input).then(
+    app.models.predict(Clarifai.FOOD_MODEL, this.state.imageURL).then(
       function(response) {
         temp_answerFood = response.outputs[0].data.concepts;
+        console.log(temp_answerFood)
       },
       function(err) {
         // alert("error - valid image URL and web connection?");
       }
     );
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input).then(
+    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.imageURL).then(
       function(response) {
         temp_answerFaces = response.outputs[0].data.regions.length;
+        console.log(temp_answerFaces)
       },
       function(err) {
         // alert("error - valid image URL and web connection?");
       }
     );
-    app.models.predict(Clarifai.COLOR_MODEL, this.state.input).then(
+    app.models.predict(Clarifai.COLOR_MODEL, this.state.imageURL).then(
       function(response) {
-        console.log(response);
         temp_answerDomCol = response.outputs[0].data.colors;
+        console.log(temp_answerDomCol)
       },
       function(err) {
         // alert("error - valid image URL and web connection?");
       }
     );
-    app.models.predict(Clarifai.GENERAL_MODEL, this.state.input).then(
+    app.models.predict(Clarifai.GENERAL_MODEL, this.state.imageURL).then(
       function(response) {
         console.log(response);
         temp_answerGeneral = response.outputs[0].data.concepts;
@@ -81,7 +86,7 @@ class Main extends React.Component {
         // alert("error - valid image URL and web connection?");
       }
     );
-    app.models.predict(Clarifai.MODERATION_MODEL, this.state.input).then(
+    app.models.predict(Clarifai.MODERATION_MODEL, this.state.imageURL).then(
       function(response) {
         console.log(response);
         temp_answerModeration = response.outputs[0].data.concepts;
@@ -96,12 +101,14 @@ class Main extends React.Component {
       raw.colors = temp_answerDomCol;
       raw.faces = temp_answerFaces;
       raw.food = temp_answerFood;
+      console.log('getRawData timeout complete, raw is: ',raw)
       this.setState({ raw: raw });
       this.processData();
     }, 3000);
   };
 
   processData = () => {
+      console.log('processData started, raw is: ',this.state.raw)
     let thresholdGeneral = 0.95;
     let thresholdModeration = 0.95;
     let thresholdFood = 0.9;
